@@ -1,8 +1,7 @@
 # Import packages
-from dash import Dash, html, dash_table, dcc, callback, Output, Input
+from dash import Dash, html, dcc, callback, Output, Input
 import pandas as pd
 import plotly.express as px
-from scipy.constants import value
 
 # Data Preprocessing
 sales = pd.read_excel('./data/coffee_shop_sales.xlsx')
@@ -15,16 +14,20 @@ app = Dash()
 app.layout = [
     html.H1('Coffee Shop Sales Dashboard'),
     html.H2('Store Analysis'),
+    # Dropdown for store location
     dcc.Dropdown(sales.store_location.unique(),
                  'Lower Manhattan',
                  id='location-dropdown'),
 
+    # Dropdown for time period
     dcc.Dropdown(['Daily', 'Weekly'],
                  'Daily',
                  id='time-dropdown'),
 
+    # Main graph
     dcc.Graph(id='main-graph'),
 
+    # Date range picker
     dcc.DatePickerRange(
         id='date-range',
         min_date_allowed=sales.transaction_date.min(),
@@ -34,12 +37,15 @@ app.layout = [
     ),
 
     html.H2('Item Analysis'),
+    # Input for top-n categories
     dcc.Input(
-        id='top-n',
+        id='top-n-cat',
         type='number',
         value=5,
         max=sales.product_category.nunique()
     ),
+
+    # Category pie chart
     dcc.Graph(id='item-graph'),
 ]
 
@@ -51,7 +57,7 @@ app.layout = [
     Input('time-dropdown', 'value'),
     Input('date-range', 'start_date'),
     Input('date-range', 'end_date'),
-    Input('top-n', 'value')
+    Input('top-n-cat', 'value')
 )
 def update_graph(location, time, start_date, end_date, top_n):
     sales_main = sales.copy()
@@ -92,6 +98,7 @@ def update_graph(location, time, start_date, end_date, top_n):
 
     # Return the figures
     return main_fig, item_fig
+
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
