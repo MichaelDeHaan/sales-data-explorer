@@ -141,4 +141,4 @@ def update_graph(location, time, prediction, start_date, end_date, top_n):
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
